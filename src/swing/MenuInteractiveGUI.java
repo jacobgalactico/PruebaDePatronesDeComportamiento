@@ -58,7 +58,7 @@ public class MenuInteractiveGUI extends JFrame {
         new Thread(() -> {
             boolean willHalt = HaltChecker.willHalt(programClass);
             if (willHalt) {
-                SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " entra en bucle infinito porque se detiene."));
+                SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " entra en bucle infinito"));
             } else {
                 SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " termina inmediatamente porque no se detiene."));
             }
