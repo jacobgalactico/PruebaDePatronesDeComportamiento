@@ -12,7 +12,7 @@ public class Reverser {
             // Si el programa original se detiene, entrar en un bucle infinito
             System.out.println("Entrando en un bucle infinito porque " + programClass.getSimpleName() + " se detiene.");
             while (true) {
-                System.out.println("clases.Reverser está en un bucle infinito.");
+                System.out.println("Reverser está en un bucle infinito porque CountDown se detiene.");
                 try {
                     Thread.sleep(1000);  // He añadido un sleep para evitar consumo excesivo de CPU
                 } catch (InterruptedException e) {
