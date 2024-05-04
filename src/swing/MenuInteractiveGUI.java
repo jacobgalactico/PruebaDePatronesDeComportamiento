@@ -1,5 +1,7 @@
 package clases;
 
+import clases.strategy.TimeBasedHaltStrategy;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,6 +10,7 @@ import java.awt.event.ActionListener;
 public class MenuInteractiveGUI extends JFrame {
 
     private JLabel resultLabel;
+    private HaltChecker haltChecker;
 
     public MenuInteractiveGUI() {
         super("Menú Interactivo - Problema de Parada de Turing");
@@ -15,6 +18,8 @@ public class MenuInteractiveGUI extends JFrame {
         setSize(500, 300);
         setLocationRelativeTo(null);
         setLayout(new FlowLayout());
+
+        haltChecker = new HaltChecker(new TimeBasedHaltStrategy()); // Inicializa HaltChecker con la estrategia deseada
 
         String[] choices = {"CountDown", "CountUp"};
         JComboBox<String> classChoice = new JComboBox<>(choices);
@@ -26,13 +31,13 @@ public class MenuInteractiveGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 String selectedClass = (String) classChoice.getSelectedItem();
+                boolean result = false;
                 if ("CountDown".equals(selectedClass)) {
-                    boolean result = HaltChecker.willHalt(CountDown.class);
-                    resultLabel.setText("CountDown se detiene: " + result);
+                    result = haltChecker.checkHalt(CountDown.class);
                 } else if ("CountUp".equals(selectedClass)) {
-                    boolean result = HaltChecker.willHalt(CountUp.class);
-                    resultLabel.setText("CountUp se detiene: " + result);
+                    result = haltChecker.checkHalt(CountUp.class);
                 }
+                resultLabel.setText(selectedClass + " se detiene: " + result);
             }
         });
 
@@ -56,15 +61,17 @@ public class MenuInteractiveGUI extends JFrame {
 
     private void runReverser(Class<?> programClass) {
         new Thread(() -> {
-            boolean willHalt = HaltChecker.willHalt(programClass);
+            // Asegúrate de pasar ambos, la clase y la instancia de HaltChecker
+            boolean willHalt = haltChecker.checkHalt(programClass);
             if (willHalt) {
                 SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " entra en bucle infinito"));
             } else {
-                SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " termina inmediatamente porque no se detiene."));
+                SwingUtilities.invokeLater(() -> resultLabel.setText("Reverser: " + programClass.getSimpleName() + " no termina según HaltChecker, por lo tanto Reverser lo detiene."));
             }
-            Reverser.reverseBehavior(programClass);
+            Reverser.reverseBehavior(programClass, haltChecker); // Pasar la instancia de HaltChecker
         }).start();
     }
+
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
